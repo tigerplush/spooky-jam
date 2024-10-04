@@ -1,3 +1,8 @@
+use bevy::prelude::*;
+use spooky_jam::plugin;
+
 fn main() {
-    println!("Hello, world!");
+    App::new()
+        .add_plugins(plugin)
+        .run();
 }

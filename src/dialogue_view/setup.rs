@@ -7,8 +7,10 @@ pub fn plugin(app: &mut App) {
 #[derive(Component)]
 pub struct UiRootNode;
 
-#[derive(Component)]
-pub struct UiDialogueList;
+#[derive(Component, Default)]
+pub struct UiDialogueList {
+    pub position: f32,
+}
 
 fn setup(mut commands: Commands) {
     commands
@@ -44,19 +46,33 @@ fn setup(mut commands: Commands) {
                     },
                 ))
                 .with_children(|scroll_view| {
-                    scroll_view.spawn((
-                        Name::from("list_w_hidden_overflow"),
-                        NodeBundle {
-                            style: Style {
-                                flex_direction: FlexDirection::Column,
-                                align_self: AlignSelf::Stretch,
-                                overflow: Overflow::clip_y(),
+                    scroll_view
+                        .spawn((
+                            Name::from("list_w_hidden_overflow"),
+                            NodeBundle {
+                                style: Style {
+                                    flex_direction: FlexDirection::Column,
+                                    align_self: AlignSelf::Stretch,
+                                    height: Val::Percent(100.),
+                                    overflow: Overflow::clip_y(),
+                                    ..default()
+                                },
                                 ..default()
                             },
-                            ..default()
-                        },
-                        UiDialogueList,
-                    ));
+                        ))
+                        .with_children(|list_w_hidden_overflow| {
+                            list_w_hidden_overflow.spawn((
+                                Name::from("moving_panel"),
+                                NodeBundle {
+                                    style: Style {
+                                        flex_direction: FlexDirection::Column,
+                                        ..default()
+                                    },
+                                    ..default()
+                                },
+                                UiDialogueList::default(),
+                            ));
+                        });
                 });
         });
 }

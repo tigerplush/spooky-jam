@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 use bevy_yarnspinner::{
     events::DialogueCompleteEvent,
     prelude::{DialogueOption, DialogueRunner, OptionId, YarnSpinnerSystemSet},
@@ -92,7 +92,7 @@ fn create_options(
                                     },
                                 ];
 
-                                button.spawn((TextBundle::from_sections(sections)));
+                                button.spawn(TextBundle::from_sections(sections));
                             });
                     }
                 });
@@ -100,6 +100,7 @@ fn create_options(
 }
 
 fn select_option(
+    keys: Res<ButtonInput<KeyCode>>,
     mut buttons: Query<
         (&Interaction, &OptionButton, &Children),
         (With<Button>, Changed<Interaction>),
@@ -107,14 +108,34 @@ fn select_option(
     mut dialogue_runners: Query<&mut DialogueRunner>,
     mut selected_option_event: EventWriter<HasSelectedOptionEvent>,
     mut commands: Commands,
+    option_selection: Res<OptionSelection>,
     query: Query<Entity, With<UiDialogueList>>,
 ) {
     let mut selection = None;
+
+    let key_to_option: HashMap<_, _> = NUMBER_KEYS
+        .into_iter()
+        .zip(NUMPAD_KEYS)
+        .zip(option_selection.options.iter().map(|option| option.id))
+        .collect();
+
+    for ((num_key, numpad_key), option) in key_to_option {
+        if keys.just_pressed(num_key) || keys.just_pressed(numpad_key) {
+            selection = Some(option);
+            break;
+        }
+    }
+
     for (interaction, button, _children) in buttons.iter_mut() {
         match *interaction {
             Interaction::Pressed if selection.is_none() => {
                 selection = Some(button.0);
-                write_line(&mut commands, query.single(), Some("YOU"), button.1.as_str());
+                write_line(
+                    &mut commands,
+                    query.single(),
+                    Some("YOU"),
+                    button.1.as_str(),
+                );
             }
             _ => (),
         };
@@ -143,12 +164,13 @@ fn despawn_options(
     if !should_despawn {
         return;
     }
-    info!("received selection event");
     has_selected_option_event.clear();
     dialogue_complete_event.clear();
 
     commands.remove_resource::<OptionSelection>();
-    commands.entity(query.single()).despawn_recursive();
+    if !query.is_empty() {
+        commands.entity(query.single()).despawn_recursive();
+    }
 }
 
 const NUMBER_KEYS: [KeyCode; 9] = [

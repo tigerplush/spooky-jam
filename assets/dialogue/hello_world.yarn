@@ -1,34 +1,34 @@
-title: HelloWorld
+title: Start
 ---
-Hello World! To continue the dialogue, click with your mouse, press the space bar or the enter key.
-These are options. You can select one by clicking on it or pressing the corresponding number on your keyboard.
--> Some cool option
--> Some other cool option
-Now we'll jump to another node!
-<<jump AnotherNode>>
+The low rumbling of a combustion engine wakes you up. Pain is pulsating in the back of your head and worsens each time you hit a bump in the road. You're obviously in a car, but you're not sitting in the cabin - you're lying sideways in what you assume is the trunk.
+-> Take in the surroundings
+<<jump TakeInSurroundings>>
 
 ===
 
-title: AnotherNode
+title: TakeInSurroundings
 ---
-Now, a character will talk. Notice how the upper left corner of the dialogue will show their name.
-Hohenheim: "Hi, I'm Jan Hohenheim, creator of Yarn Spinner for Rust. I hope you enjoy using it!"
-"Let's set a condition. Do you prefer dogs or cats?"
--> "Dogs"
-    <<set $animal = "dog">>
--> "Cats"
-    <<set $animal = "cats">>
--> "Turtles"
-    I, uuuh... okay, why not.
-    <<set $animal = "turtles">>
-Now let's print the result of the condition. Your preference is...
-(Drum roll)
-<<if $animal == "dog">>
-Dogs! Arf Arf!
-<<elseif $animal == "cats">>
-Cats! (Can't say I agree, but you do you)
-<<else>>
-Turtles! Solid choice.
-<<endif>>
-Et voilà! That was all. Thanks for checking out Yarn Spinner for Rust! Continuing from the last node will exit the dialogue.
+There is not much to "take in". You're lying on your side, your hands are tied behind your back. You have something on your head that prevents you from seeing anything - but even if you hadn't, you assume you lie in total darkness.
+-> Concentrate on the cabin
+    <<jump ConcentrateOnCabin>>
+-> Try to feel for something useful
+    <<jump FeelSomethingUseful>>
+===
+
+title: ConcentrateOnCabin
+---
+You hear multiple voices over the general noises of the car. At least two people are talking. The radio is running, too, a news broadcast, probably?
+<<jump RoadGetsWorse>>
+===
+
+title: FeelSomethingUseful
+---
+You concentrate on your immediate surroundings. You have some kind of sack on your head, its material is itchy, burlap probably? Your hands are tied behind your back with a thin, plasticy material - zip ties would be a likely contender.
+You still got all of your clothes on, that's at least something. You seem to have your wallet and your keys with you, too, although you can only feel their weight in your pockets - you can't reach them.
+<<jump RoadGetsWorse>>
+===
+
+title: RoadGetsWorse
+---
+As you lie there, concentrating, the car takes a left turn. You hear branches and twigs scratch the car and snap against it. The bumps in the road get worse to the point that you feel yourself lifting from the matting in your prison.
 ===

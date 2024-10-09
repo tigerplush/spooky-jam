@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
+use bevy::{color::palettes::css, prelude::*, utils::HashMap, window::PrimaryWindow};
 use bevy_yarnspinner::{
     events::DialogueCompleteEvent,
     prelude::{DialogueOption, DialogueRunner, OptionId, YarnSpinnerSystemSet},
@@ -35,6 +35,9 @@ struct OptionButton(OptionId, String);
 pub struct OptionSelection {
     options: Vec<DialogueOption>,
 }
+
+#[derive(Component)]
+struct OptionLabel;
 
 impl OptionSelection {
     pub fn from_option_set<'a>(options: impl IntoIterator<Item = &'a DialogueOption>) -> Self {
@@ -92,7 +95,7 @@ fn create_options(
                                     },
                                 ];
 
-                                button.spawn(TextBundle::from_sections(sections));
+                                button.spawn((TextBundle::from_sections(sections), OptionLabel));
                             });
                     }
                 });
@@ -106,6 +109,7 @@ fn select_option(
         (With<Button>, Changed<Interaction>),
     >,
     mut dialogue_runners: Query<&mut DialogueRunner>,
+    mut text: Query<&mut Text, With<OptionLabel>>,
     mut selected_option_event: EventWriter<HasSelectedOptionEvent>,
     mut commands: Commands,
     option_selection: Res<OptionSelection>,
@@ -127,7 +131,7 @@ fn select_option(
     }
 
     for (interaction, button, _children) in buttons.iter_mut() {
-        match *interaction {
+        let (color, icon) = match *interaction {
             Interaction::Pressed if selection.is_none() => {
                 selection = Some(button.0);
                 write_line(
@@ -136,9 +140,14 @@ fn select_option(
                     Some("YOU"),
                     button.1.as_str(),
                 );
+                (css::TOMATO.into(), CursorIcon::Default)
             }
-            _ => (),
+            Interaction::Hovered => (Color::WHITE, CursorIcon::Pointer),
+            _ => (css::TOMATO.into(), CursorIcon::Default),
         };
+        let text_entity = _children.iter().find(|&e| text.contains(*e)).unwrap();
+        let mut text = text.get_mut(*text_entity).unwrap();
+        text.sections[1].style.color = color;
     }
 
     let has_selected_id = selection.is_some();

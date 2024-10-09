@@ -1,4 +1,7 @@
-use bevy::{input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*};
+use bevy::{
+    input::mouse::{MouseScrollUnit, MouseWheel},
+    prelude::*,
+};
 use bevy_yarnspinner::{
     events::{DialogueStartEvent, PresentLineEvent, PresentOptionsEvent},
     prelude::{DialogueRunner, YarnSpinnerSystemSet},
@@ -103,7 +106,6 @@ fn mouse_scroll(
 
             dialogue_list.position += dy;
             dialogue_list.position = dialogue_list.position.clamp(-max_scroll, 0.);
-            info!("{}", dialogue_list.position);
             style.top = Val::Px(dialogue_list.position);
         }
     }
